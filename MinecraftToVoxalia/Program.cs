@@ -8,6 +8,7 @@ using System.IO.Compression;
 using Substrate;
 using Substrate.Core;
 using LiteDB;
+using LZ4;
 
 namespace MinecraftToVoxalia
 {
@@ -20,36 +21,166 @@ namespace MinecraftToVoxalia
 
         static BlockInternal Translate(byte mat, byte dat)
         {
-            if (mat == 0)
+            switch (mat)
             {
-                return BlockInternal.AIR;
+                case 0:
+                    return BlockInternal.AIR;
+                case 1:
+                    return Quick(1); // Stone
+                case 2:
+                    return Quick(2); // Grass_Forest
+                case 3:
+                    return Quick(3); // Dirt
+                case 4:
+                    return Quick(33); // Cobblestone
+                case 5:
+                    return Quick(26); // Planks_Oak
+                // 6 : baby tree
+                // 7: bedrock
+                case 8:
+                case 9:
+                    // TODO: flowing stuff, shapes
+                    return Quick(4); // Water
+                case 10:
+                case 11:
+                    // TODO: flowing stuff, shapes
+                    return Quick(35); // Lava
+                case 12:
+                    return Quick(13); // Sand
+                // 13: gravel
+                // 14: gold ore
+                // 15: iron ore
+                case 16:
+                    return Quick(22); // Coal_ore
+                case 17:
+                    // TODO: Log types
+                    return Quick(11); // Log_Oak
+                case 18:
+                    // TODO: Leaf types
+                    return Quick(6); // Leaves_Oak_Solid
+                // 19: sponge
+                case 20:
+                    return Quick(27); // Glass_Window
+                // 21: lapis ore
+                // 22: lapis block
+                // 23: dispenser
+                case 24:
+                    return Quick(17); // Sandstone
+                // 25: Note block
+                // 26: Bed
+                // 27: powered rail
+                // 28: detector rail
+                // 29: sticky piston
+                // 30: cobweb
+                // 31: dead shrub, tallgrass, fern
+                // 32: dead bush
+                // 33: piston
+                // 34: piston head
+                // 35: wool (colors)
+                // 37: dandelion
+                // 38: poppy
+                // 39: brown mushroom
+                // 40: red mushroom
+                // 41: gold block
+                // 42: iron block
+                case 43:
+                    // TODO: "Double slab types"
+                    return Quick(1); // Stone
+                // 44: half height slab
+                case 45:
+                    return Quick(37); // Bricks
+                // 46: tnt
+                // 47: bookshelves
+                // 48: mossy stone
+                // 49: obsidian
+                // 50: torch
+                case 51:
+                    return Quick(38); // Fire
+                // 52: monster cage
+                // 53: oak stairs (directions)
+                // 54: chest
+                // 55: redstone wire
+                // 56: diamond ore
+                // 57: diamond block
+                // 58: crafting table
+                // 59: wheat crops
+                // 60: farmland
+                // 61: furnace (directions)
+                // 62: burning furnace (directions)
+                // 63: standing sign
+                // 64: oak door
+                // 65: ladder
+                // 66: rail
+                // 67: cobblestone stairs
+                // 68: wall mounted sign
+                // 69: lever
+                // 70: stone pressure plate
+                // 71: iron door
+                // 72: wooden pressure plate
+                // 73: redstone ore
+                // 74: glowing redstone ore
+                // 75: redstone torch off
+                // 76: redstone torch lit
+                // 77: stone button
+                case 78:
+                    // TODO: Heights
+                    return Quick(9); // Snow_Solid
+                case 79:
+                    return Quick(29); // Ice
+                case 80:
+                    return Quick(9); // Snow_Solid
+                // 81: cactus
+                // 82: clay
+                // 83: sugar cane
+                // 84: jukebox
+                // 85: oak fence
+                // 86: pumpkin
+                // 87: nether rack
+                // 88: soul sand
+                // 89: glowstone
+                // 90: nether portal
+                // 91: jack o'lantern
+                // 92: cake
+                // 93: repeater off
+                // 94: repeater on
+                case 95:
+                    // TODO: colors!
+                    return Quick(27); // Glass_Window
+                // 96: wood trapdoor
+                case 97:
+                    return Quick(1);
+                case 98:
+                    // TODO: stone bricks!
+                    // TODO: Sub-types!
+                    return Quick(1);
+                // 99: Brown mushroom block
+                // 100: red mushroom block
+                // 101: iron bars
+                case 102:
+                    // TODO: Glass pane directions!
+                    return Quick(27); // Glass_Window
+                // 103: melon
+                // 104: baby pumpkin plant
+                // 105: baby melon plant
+                // 106: vines
+                // 107: oak fence gate
+                // 108: brick stairs
+                // 109: stone brick stairs
+                // 110: mycelium
+                // 111: lily pad
+                // 112: nether brick
+                // ... 
+                // TODO: Continue from: http://minecraft-ids.grahamedgecombe.com/
+                case 161:
+                    // TODO: Leaf types
+                    return Quick(6); // Leaves_Oak_Solid
+                case 162:
+                    // TODO: Log types
+                    return Quick(11); // Log_Oak
+                default:
+                    // TODO: Other material translations!
+                    return Quick(24); // Color
             }
-            if (mat == 2 || mat == 3)
-            {
-                return Quick(mat);
-            }
-            else if (mat == 5)
-            {
-                return Quick(26);
-            }
-            else if (mat == 8 || mat == 9)
-            {
-                return Quick(4);
-            }
-            else if (mat == 12)
-            {
-                return Quick(13);
-            }
-            else if (mat == 17 || mat == 162)
-            {
-                return Quick(11);
-            }
-            else if (mat == 18 || mat == 161)
-            {
-                return Quick(6);
-            }
-            // TODO: Other material translations!
-            return Quick(1);
         }
 
         static LiteCollection<BsonDocument> DBChunks;
@@ -64,7 +195,7 @@ namespace MinecraftToVoxalia
                 Console.WriteLine("No level.dat found!");
                 return;
             }
-            NbtWorld world = NbtWorld.Open("./");
+            AnvilWorld world = AnvilWorld.Open("./");
             if (world == null)
             {
                 Console.WriteLine("World loading failed!");
@@ -182,7 +313,7 @@ namespace MinecraftToVoxalia
         public static byte[] GZip(byte[] input)
         {
             MemoryStream memstream = new MemoryStream();
-            GZipStream GZStream = new GZipStream(memstream, CompressionMode.Compress);
+            LZ4Stream GZStream = new LZ4Stream(memstream, CompressionMode.Compress);
             GZStream.Write(input, 0, input.Length);
             GZStream.Close();
             byte[] finaldata = memstream.ToArray();
@@ -195,7 +326,7 @@ namespace MinecraftToVoxalia
             using (MemoryStream output = new MemoryStream())
             {
                 MemoryStream memstream = new MemoryStream(input);
-                GZipStream GZStream = new GZipStream(memstream, CompressionMode.Decompress);
+                LZ4Stream GZStream = new LZ4Stream(memstream, CompressionMode.Decompress);
                 GZStream.CopyTo(output);
                 GZStream.Close();
                 memstream.Close();

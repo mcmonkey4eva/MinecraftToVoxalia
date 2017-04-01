@@ -251,18 +251,14 @@ namespace MinecraftToVoxalia
 
         public static Chunk GetChunkAt(Vector3i cpos)
         {
-            Chunk ch;
-            if (LoadedChunks.TryGetValue(cpos, out ch))
+            if (LoadedChunks.TryGetValue(cpos, out Chunk ch))
             {
                 return ch;
             }
             ch = GetChunkDetails(cpos.X, cpos.Y, cpos.Z);
             if (ch == null)
             {
-                ch = new Chunk();
-                ch.X = cpos.X;
-                ch.Y = cpos.Y;
-                ch.Z = cpos.Z;
+                ch = new Chunk() { X = cpos.X, Y = cpos.Y, Z = cpos.Z };
             }
             if (LoadedChunks.Count > 1000)
             {
@@ -289,18 +285,15 @@ namespace MinecraftToVoxalia
             {
                 return null;
             }
-            Chunk chunk = new Chunk();
-            chunk.X = x;
-            chunk.Y = y;
-            chunk.Z = z;
+            Chunk chunk = new Chunk() { X = x, Y = y, Z = z };
             chunk.ReadBlockBytes(UnGZip(doc["blocks"].AsBinary));
             return chunk;
         }
 
         public static void WriteChunkDetails(Chunk chunk)
         {
-            BsonValue id = GetIDFor(chunk.X, chunk.Y, chunk.Z);
             BsonDocument newdoc = new BsonDocument();
+            BsonValue id = GetIDFor(chunk.X, chunk.Y, chunk.Z);
             newdoc["_id"] = id;
             newdoc["version"] = new BsonValue(2);
             newdoc["flags"] = new BsonValue(0);

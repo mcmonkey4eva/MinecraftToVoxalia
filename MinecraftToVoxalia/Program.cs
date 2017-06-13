@@ -23,48 +23,49 @@ namespace MinecraftToVoxalia
         {
             switch (mat)
             {
-                case 0:
+                case 0: // Air
                     return BlockInternal.AIR;
-                case 1:
+                case 1: // Stone
                     return Quick(1); // Stone
-                case 2:
-                    return Quick(2); // Grass_Forest
-                case 3:
+                case 2: // Grass
+                    return Quick(36); // Grass_Forest
+                case 3: // Dirt
                     return Quick(3); // Dirt
-                case 4:
+                case 4: // Cobblestone
                     return Quick(33); // Cobblestone
-                case 5:
+                case 5: // Planks
+                    // TODO: Plank types
                     return Quick(26); // Planks_Oak
-                // 6 : baby tree
+                // 6: baby tree
                 // 7: bedrock
-                case 8:
-                case 9:
+                case 8: // water
+                case 9: // water
                     // TODO: flowing stuff, shapes
                     return Quick(4); // Water
-                case 10:
-                case 11:
+                case 10: // lava
+                case 11: // lava
                     // TODO: flowing stuff, shapes
                     return Quick(35); // Lava
-                case 12:
+                case 12: // sand
                     return Quick(13); // Sand
                 // 13: gravel
                 // 14: gold ore
                 // 15: iron ore
-                case 16:
+                case 16: // coal_ore
                     return Quick(22); // Coal_ore
-                case 17:
+                case 17: // log
                     // TODO: Log types
                     return Quick(11); // Log_Oak
                 case 18:
                     // TODO: Leaf types
                     return Quick(6); // Leaves_Oak_Solid
                 // 19: sponge
-                case 20:
+                case 20: // glass
                     return Quick(27); // Glass_Window
                 // 21: lapis ore
                 // 22: lapis block
                 // 23: dispenser
-                case 24:
+                case 24: // sandstone
                     return Quick(17); // Sandstone
                 // 25: Note block
                 // 26: Bed
@@ -83,18 +84,18 @@ namespace MinecraftToVoxalia
                 // 40: red mushroom
                 // 41: gold block
                 // 42: iron block
-                case 43:
+                case 43: // double_slab
                     // TODO: "Double slab types"
                     return Quick(1); // Stone
                 // 44: half height slab
-                case 45:
+                case 45: // slab
                     return Quick(37); // Bricks
                 // 46: tnt
                 // 47: bookshelves
                 // 48: mossy stone
                 // 49: obsidian
                 // 50: torch
-                case 51:
+                case 51: // fire
                     return Quick(38); // Fire
                 // 52: monster cage
                 // 53: oak stairs (directions)
@@ -122,12 +123,12 @@ namespace MinecraftToVoxalia
                 // 75: redstone torch off
                 // 76: redstone torch lit
                 // 77: stone button
-                case 78:
+                case 78: // snow
                     // TODO: Heights
                     return Quick(9); // Snow_Solid
-                case 79:
+                case 79: // ice
                     return Quick(29); // Ice
-                case 80:
+                case 80: // snow block
                     return Quick(9); // Snow_Solid
                 // 81: cactus
                 // 82: clay
@@ -143,20 +144,20 @@ namespace MinecraftToVoxalia
                 // 92: cake
                 // 93: repeater off
                 // 94: repeater on
-                case 95:
+                case 95: // stained glass
                     // TODO: colors!
                     return Quick(27); // Glass_Window
                 // 96: wood trapdoor
-                case 97:
+                case 97: // stone monster egg
                     return Quick(1);
-                case 98:
+                case 98: // stone bricks
                     // TODO: stone bricks!
                     // TODO: Sub-types!
                     return Quick(1);
                 // 99: Brown mushroom block
                 // 100: red mushroom block
                 // 101: iron bars
-                case 102:
+                case 102: // glass pane
                     // TODO: Glass pane directions!
                     return Quick(27); // Glass_Window
                 // 103: melon
@@ -169,14 +170,105 @@ namespace MinecraftToVoxalia
                 // 110: mycelium
                 // 111: lily pad
                 // 112: nether brick
-                // ... 
-                // TODO: Continue from: http://minecraft-ids.grahamedgecombe.com/
+                // 113: nether brick fence
+                // 114: nether brick stairs
+                // 115: nether wart
+                // 116: enchantment table
+                // 117: brewing stand
+                // 118: cauldron
+                // 119: end portal
+                // 120: end portal frame
+                case 121: // end stone
+                    return Quick(17); // Sandstone
+                // 122: dragon egg
+                // 123: redstone lamp off
+                // 124: redstone lamp on
+                case 125: // Double Wood Plank Slab
+                    // TODO: Plank types
+                    return Quick(26); // Planks_Oak
+                // 126: wood plank slabs
+                // 127: cocoa
+                // 128: sandstone stairs
+                // 129: emerald ore
+                // 130: ender chest
+                // 131: tripwire hook
+                // 132: tripwire
+                // 133: emerald block
+                // 134: spruce wood stairs
+                // 135: birch wood stairs
+                // 136: jungle wood stairs
+                // 137: coomand block
+                // 138: beacon
+                // 139: Cobblestone wall
+                // 140: flower pot
+                // 141: carrots
+                // 142: potatoes
+                // 143: wooden button
+                // 144: mob head
+                // 145: anvil
+                // 146: trapped chest
+                // 147: weighted pressure plate light (gold)
+                // 148: weight pressure plate heavy (iron)
+                // 149: redstone comparator off
+                // 150: redstone comparator on
+                // 151: daylight sensor
+                // 152: redstone block
+                // 153: nether quartz ore
+                // 154: hopper
+                // 155: quartz block
+                // 156: quartz stairs
+                // 157: activator rail
+                // 158: dropper
+                // 159: hardened clay
+                case 160: // stained glass pane
+                    // TODO: Glass pane directions, colors!
+                    return Quick(27); // Glass_Window
                 case 161:
                     // TODO: Leaf types
                     return Quick(6); // Leaves_Oak_Solid
                 case 162:
                     // TODO: Log types
                     return Quick(11); // Log_Oak
+                // 163: acacia wood stairs
+                // 164: dark oak wood stairs
+                // 165: slime block
+                // 166: barrier block
+                // 167: iron trapdoor
+                // 168: prismarine
+                // 169: sea lantern
+                // 170: hay bale
+                // 171: carpet (colors)
+                // 172: hardened clay
+                // 173: block of coal
+                // 174: packed ice
+                // 175: double tall plants
+                // 176: free standing banner
+                // 177: wall mounted banner
+                // 178: inverted daylight sensor
+                // 179: red sandstone
+                // 180: red sandstone stairs
+                // 181: double red sandstone slab
+                // 182: red sandstone slab
+                // 183: spruce fence gate
+                // 184: birch fence gate
+                // 185: jungle fence gate
+                // 186: dark oak fence gate
+                // 187: acacia fence gate
+                // 188: spruce fence
+                // 189: birch fence
+                // 190: jungle fence
+                // 191: dark oak fence
+                // 192: acacia fence
+                // 193: spruce door block
+                // 194: birch door block
+                // 195: jungle door block
+                // 196: acacia door block
+                // 197: dark oak door block
+                // 198: end rod
+                // 199: chorus plant
+                // 200: chorus flower
+                // ... 
+                // TODO: Continue from (up to 255): http://minecraft-ids.grahamedgecombe.com/
                 default:
                     // TODO: Other material translations!
                     return Quick(24); // Color

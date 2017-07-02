@@ -26,7 +26,7 @@ namespace MinecraftToVoxalia
                 case 0: // Air
                     return BlockInternal.AIR;
                 case 1: // Stone
-                    return Quick(1); // Stone
+                    return Quick(40); // Stone
                 case 2: // Grass
                     return Quick(36); // Grass_Forest
                 case 3: // Dirt
@@ -91,7 +91,7 @@ namespace MinecraftToVoxalia
                 // 42: iron block
                 case 43: // double_slab
                     // TODO: "Double slab types"
-                    return Quick(1); // Stone
+                    return Quick(40); // Stone
                 // 44: half height slab
                 case 45: // slab
                     return Quick(37); // Bricks
@@ -155,11 +155,11 @@ namespace MinecraftToVoxalia
                     return Quick(27); // Glass_Window
                 // 96: wood trapdoor
                 case 97: // stone monster egg
-                    return Quick(1);
+                    return Quick(40);
                 case 98: // stone bricks
                     // TODO: stone bricks!
                     // TODO: Sub-types!
-                    return Quick(1);
+                    return Quick(40);
                 // 99: Brown mushroom block
                 // 100: red mushroom block
                 // 101: iron bars

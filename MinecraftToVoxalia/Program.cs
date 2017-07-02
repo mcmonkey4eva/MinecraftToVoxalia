@@ -281,13 +281,13 @@ namespace MinecraftToVoxalia
             }
         }
 
-        static LiteCollection<BsonDocument> DBChunks;
+        static ChunkDataManager ChunkManager;
 
         static void Main(string[] args)
         {
             Console.WriteLine("Start processing...");
-            LiteDatabase Database = new LiteDatabase("filename=" + Environment.CurrentDirectory + "/chunks.ldb");
-            DBChunks = Database.GetCollection<BsonDocument>("chunks");
+            ChunkManager = new ChunkDataManager();
+            ChunkManager.Init();
             if (!File.Exists("./level.dat"))
             {
                 Console.WriteLine("No level.dat found!");
@@ -330,7 +330,8 @@ namespace MinecraftToVoxalia
                 }
             }
             SaveAndClean();
-            Database.Dispose();
+            // TODO: LOD/SLOD post-management? or do that via Voxalia itself somehow?
+            ChunkManager.Shutdown();
             Console.WriteLine("Processing complete!");
         }
 
@@ -377,28 +378,21 @@ namespace MinecraftToVoxalia
 
         public static Chunk GetChunkDetails(int x, int y, int z)
         {
-            BsonDocument doc;
-            doc = DBChunks.FindById(GetIDFor(x, y, z));
+            byte[] doc = ChunkManager.GetChunkBytes(new Vector3i(x, y, z));
             if (doc == null)
             {
                 return null;
             }
             Chunk chunk = new Chunk() { X = x, Y = y, Z = z };
-            chunk.ReadBlockBytes(UnGZip(doc["blocks"].AsBinary));
+            chunk.ReadBlockBytes(doc);
             return chunk;
         }
 
+        static byte[] reach = new byte[15] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+
         public static void WriteChunkDetails(Chunk chunk)
         {
-            BsonDocument newdoc = new BsonDocument();
-            BsonValue id = GetIDFor(chunk.X, chunk.Y, chunk.Z);
-            newdoc["_id"] = id;
-            newdoc["version"] = new BsonValue(2);
-            newdoc["flags"] = new BsonValue(0);
-            newdoc["blocks"] = new BsonValue(GZip(chunk.BlockBytes()));
-            newdoc["reach"] = new BsonValue(new byte[15] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
-            DBChunks.Delete(id);
-            DBChunks.Insert(newdoc);
+            ChunkManager.WriteChunkDetails(2, 0, chunk.BlockBytes(), new Vector3i(chunk.X, chunk.Y, chunk.Z), reach);
         }
 
         public static byte[] GZip(byte[] input)

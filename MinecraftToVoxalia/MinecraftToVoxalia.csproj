@@ -52,8 +52,10 @@
   <ItemGroup>
     <Compile Include="BlockInternal.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="ChunkDataManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Vector2i.cs" />
     <Compile Include="Vector3i.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

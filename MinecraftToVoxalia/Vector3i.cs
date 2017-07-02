@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MinecraftToVoxalia
 {
-    class Vector3i : IEquatable<Vector3i>
+    public class Vector3i : IEquatable<Vector3i>
     {
         public Vector3i(int x, int y, int z)
         {

@@ -49,8 +49,10 @@ namespace MinecraftToVoxalia
                 case 12: // sand
                     return Quick(13); // Sand
                 // 13: gravel
-                // 14: gold ore
-                // 15: iron ore
+                case 14: // gold ore
+                    return Quick(22); // Coal_ore // TODO
+                case 15: // iron ore
+                    return Quick(22); // Coal_ore // TODO
                 case 16: // coal_ore
                     return Quick(22); // Coal_ore
                 case 17: // log
@@ -73,13 +75,16 @@ namespace MinecraftToVoxalia
                 // 28: detector rail
                 // 29: sticky piston
                 // 30: cobweb
-                // 31: dead shrub, tallgrass, fern
+                case 31: // dead shrub, tallgrass, fern
+                    return BlockInternal.AIR; // TODO
                 // 32: dead bush
                 // 33: piston
                 // 34: piston head
                 // 35: wool (colors)
-                // 37: dandelion
-                // 38: poppy
+                case 37: // dandelion
+                    return BlockInternal.AIR; // TODO
+                case 38: // poppy
+                    return BlockInternal.AIR; // TODO
                 // 39: brown mushroom
                 // 40: red mushroom
                 // 41: gold block
@@ -101,7 +106,8 @@ namespace MinecraftToVoxalia
                 // 53: oak stairs (directions)
                 // 54: chest
                 // 55: redstone wire
-                // 56: diamond ore
+                case 56: // diamond ore
+                    return Quick(22); // Coal_ore // TODO
                 // 57: diamond block
                 // 58: crafting table
                 // 59: wheat crops

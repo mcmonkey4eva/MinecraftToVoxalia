@@ -12,6 +12,13 @@ using LZ4;
 
 namespace MinecraftToVoxalia
 {
+    struct BlockData
+    {
+        public string Name;
+
+        public int ResultantID;
+    }
+
     class Program
     {
         static BlockInternal Quick(ushort id)
@@ -19,8 +26,11 @@ namespace MinecraftToVoxalia
             return new BlockInternal(id, 0, 0, 0);
         }
 
+        static Dictionary<int, Dictionary<int, BlockData>> TranslationsPrefixed = new Dictionary<int, Dictionary<int, BlockData>>();
+
         static BlockInternal Translate(byte mat, byte dat)
         {
+            // TODO: This whole switch should be a dictionary... or even an array!
             switch (mat)
             {
                 case 0: // Air
@@ -276,6 +286,10 @@ namespace MinecraftToVoxalia
                 // ... 
                 // TODO: Continue from (up to 255): http://minecraft-ids.grahamedgecombe.com/
                 default:
+                    if (TranslationsPrefixed.TryGetValue(mat, out Dictionary<int, BlockData> vals) && vals.TryGetValue(dat, out BlockData d))
+                    {
+                        return Quick((ushort)d.ResultantID);
+                    }
                     // TODO: Other material translations!
                     return Quick(24); // Color
             }
@@ -283,8 +297,83 @@ namespace MinecraftToVoxalia
 
         static ChunkDataManager ChunkManager;
 
+        static string FindTextureFor(string bName)
+        {
+            if (!File.Exists("./block/" + bName + ".json"))
+            {
+                return "TextureBasic=blocks/minecraft/stone";
+            }
+            string datum = File.ReadAllText("./block/" + bName + ".json");
+            BsonValue b = JsonSerializer.Deserialize(datum);
+            if (b.IsDocument && b.AsDocument.ContainsKey("textures"))
+            {
+                BsonDocument doc = b.AsDocument["textures"].AsDocument;
+                if (doc.ContainsKey("all"))
+                {
+                    return "TextureBasic=blocks/minecraft/" + doc["all"].AsString;
+                }
+                else if (doc.ContainsKey("end") && doc.ContainsKey("side"))
+                {
+                    return "TextureBasic=blocks/minecraft/" + doc["side"].AsString
+                        + "\r\nTexture_TOP=" + doc["end"].AsString
+                        + "\r\nTexture_BOTTOM=" + doc["end"].AsString;
+                }
+                else if (doc.ContainsKey("top") && doc.ContainsKey("bottom") && doc.ContainsKey("side"))
+                {
+                    return "TextureBasic=blocks/minecraft/" + doc["side"].AsString
+                        + "\r\nTexture_TOP=" + doc["top"].AsString
+                        + "\r\nTexture_BOTTOM=" + doc["bottom"].AsString;
+                }
+            }
+            return "TextureBasic=blocks/minecraft/stone";
+        }
+
         static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                if (args[0] == "interpret_data")
+                {
+                    int zf = 0;
+                    string[] xml = File.ReadAllText("./xml.txt").Split('\n');
+                    for (int i = 0; i < xml.Length; i++)
+                    {
+                        if (xml[i].Contains("<td class=\"id\">"))
+                        {
+                            string trimmed = xml[i].Trim();
+                            string idder = trimmed.Substring("<td class=\"id\">".Length, trimmed.Length - ("<td class=\"id\">".Length + "</td>".Length));
+                            string[] bits = idder.Split(':');
+                            int b = bits.Length > 1 ? int.Parse(bits[1]) : 0;
+                            int d = int.Parse(bits[0]);
+                            if (!TranslationsPrefixed.TryGetValue(d, out Dictionary<int, BlockData> subVal))
+                            {
+                                subVal = new Dictionary<int, BlockData>();
+                                TranslationsPrefixed[d] = subVal;
+                            }
+                            string textValPrep = xml[i + 2].Trim();
+                            textValPrep = textValPrep.Substring(textValPrep.IndexOf("<span class=\"text-id\">(minecraft:") + "<span class=\"text-id\">(minecraft:".Length);
+                            textValPrep = textValPrep.Substring(0, textValPrep.Length - ")</span></td>".Length);
+                            subVal[b] = new BlockData() { Name = textValPrep, ResultantID = 1000 + zf };
+                            zf++;
+                        }
+                    }
+                    Directory.CreateDirectory("./info_blocks/");
+                    Directory.CreateDirectory("./item_blocks/");
+                    foreach (KeyValuePair<int, Dictionary<int, BlockData>> vals in TranslationsPrefixed)
+                    {
+                        foreach (KeyValuePair<int, BlockData> bDat in vals.Value)
+                        {
+                            File.WriteAllText("./info_blocks/" + bDat.Value.ResultantID + ".blk",
+                                "Name=" + bDat.Value.Name + "_MC_VERSION\r\nSound=STONE\r\n" + FindTextureFor(bDat.Value.Name) + "\r\n"
+                                );
+                            File.WriteAllText("./item_blocks/" + bDat.Value.Name + ".itm",
+                                "type: block\r\nicon: render_block:self\r\ndisplay: " + bDat.Value.Name + "\r\nDescription: Imported from minecraft!\r\ncolor: 1,1,1\r\nmodel: block\r\nbound: false"
+                                + "\r\ndatum: " + bDat.Value.ResultantID + "\r\nweight: 1\r\nvolume: 1\r\n"
+                                );
+                        }
+                    }
+                }
+            }
             Console.WriteLine("Start processing...");
             ChunkManager = new ChunkDataManager();
             ChunkManager.Init();
